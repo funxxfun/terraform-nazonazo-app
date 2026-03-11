@@ -10,6 +10,11 @@ interface Riddle {
   hint: string;
   choices?: string[];
 }
+interface AnswerLog {
+  riddle: Riddle;
+  userAnswer: string;
+  correct: boolean;
+}
 
 const RIDDLES: Riddle[] = [
   // ===== 初級 概念理解 まるばつ =====
@@ -30,8 +35,7 @@ const RIDDLES: Riddle[] = [
   { level:"初級", type:"4択", q:"Terraformのモジュールとは何か？", a:"A", hint:"DRYを実現するための再利用可能なコードのまとまり", choices:["A: 再利用可能なTerraformコードのまとまり","B: stateファイルの別名","C: プロバイダーの設定ファイル","D: クラウドのリソースグループ"] },
   { level:"初級", type:"4択", q:"Terraformのstateファイルの主な役割は？", a:"B", hint:"このファイルとコードの差分からplanが計算される", choices:["A: プロバイダーのバージョンを固定する","B: 現在のインフラ状態を記録してコードとの差分計算に使う","C: 変数の値を保存する","D: モジュールの依存関係を管理する"] },
   { level:"初級", type:"4択", q:"冪等性（べき等性）とは何か？", a:"C", hint:"Terraformが目指す性質で、何度applyしても同じ状態になる", choices:["A: 実行速度が一定であること","B: コストが変わらないこと","C: 何度実行しても同じ結果になること","D: エラーが発生しないこと"] },
-
-  // ===== 初級 まるばつ (25問) =====
+  // ===== 初級 まるばつ =====
   { level:"初級", type:"まるばつ", q:"terraform plan を実行するとインフラが変更される", a:"✗", hint:"planは差分確認のみ。実際の変更はapplyで行う" },
   { level:"初級", type:"まるばつ", q:"terraform destroy を実行すると .tf ファイルも削除される", a:"✗", hint:"destroyはインフラリソースを削除するだけ。ファイルは消えない" },
   { level:"初級", type:"まるばつ", q:"terraform fmt はコードの動作を変更することがある", a:"✗", hint:"fmtはあくまで見た目の整形のみ。ロジックは変わらない" },
@@ -57,8 +61,7 @@ const RIDDLES: Riddle[] = [
   { level:"初級", type:"まるばつ", q:"terraform workspace はデフォルトで「default」という名前で作成される", a:"〇", hint:"terraform workspace show で確認できる" },
   { level:"初級", type:"まるばつ", q:"resourceブロックで定義した名前はクラウド上のリソース名に直接使われる", a:"✗", hint:"Terraform内部の識別子。クラウド上の名前はnameタグなどで別途指定する" },
   { level:"初級", type:"まるばつ", q:"terraform fmt は再帰的にサブディレクトリも整形する", a:"✗", hint:"-recursive オプションを付けると再帰的に整形できる" },
-
-  // ===== 初級 4択 (25問) =====
+  // ===== 初級 4択 =====
   { level:"初級", type:"4択", q:"terraform init が主に行うことはどれ？", a:"B", hint:"バックエンド初期化とプロバイダープラグインの取得を行う", choices:["A: インフラの作成","B: プロバイダーのダウンロード","C: 差分の確認","D: リソースの削除"] },
   { level:"初級", type:"4択", q:"variableブロックで定義した変数を参照するときの書き方は？", a:"C", hint:"var というプレフィックスを使う", choices:["A: variable.変数名","B: input.変数名","C: var.変数名","D: param.変数名"] },
   { level:"初級", type:"4択", q:"terraform planで「~」が表示されたリソースはどうなる？", a:"A", hint:"既存リソースの属性が更新されることを示す", choices:["A: 変更される","B: 削除される","C: 新規作成される","D: 何もしない"] },
@@ -84,7 +87,6 @@ const RIDDLES: Riddle[] = [
   { level:"初級", type:"4択", q:"moduleブロックで必ず指定しなければならないキーはどれ？", a:"C", hint:"モジュールの場所を指定する", choices:["A: name","B: version","C: source","D: provider"] },
   { level:"初級", type:"4択", q:"terraform init -upgrade が行うことはどれ？", a:"B", hint:"ロックファイルも更新される", choices:["A: stateをリセットする","B: プロバイダーを最新版にアップグレードする","C: ワークスペースを切り替える","D: バックエンドを初期化する"] },
   { level:"初級", type:"4択", q:"terraform state mv の用途はどれ？", a:"D", hint:"リソースのリネームや別stateへの移動に使う", choices:["A: リソースを削除する","B: stateファイルを移動する","C: バックエンドを変更する","D: stateのリソース名を変更する"] },
-
   // ===== 中級 概念理解 まるばつ =====
   { level:"中級", type:"まるばつ", q:"TerraformはAnsibleと同じくサーバー内部の設定管理が得意なツールである", a:"✗", hint:"Terraformはインフラのプロビジョニングが得意。設定管理はAnsibleなどが担う" },
   { level:"中級", type:"まるばつ", q:"Terraformの冪等性とは、同じコードを何度applyしても同じ状態になることを指す", a:"〇", hint:"差分がなければapplyしても何も変わらない" },
@@ -97,7 +99,6 @@ const RIDDLES: Riddle[] = [
   { level:"中級", type:"4択", q:"「インフラのドリフト」とはどういう状態か？", a:"A", hint:"terraform refreshやplanで検出できる", choices:["A: stateとクラウドの実際のリソース状態がズレている状態","B: コードにバグがある状態","C: stateファイルが破損した状態","D: プロバイダーのバージョンが古い状態"] },
   { level:"中級", type:"4択", q:"Terraformでenv（環境）を分ける方法として最も安全なのはどれ？", a:"D", hint:"workspaceはstateを分けるだけで設定を分けにくい", choices:["A: 同一ディレクトリで変数を変える","B: workspace だけで分ける","C: .tfvars のみで管理する","D: 環境ごとにディレクトリを分けてstateも分ける"] },
   { level:"中級", type:"4択", q:"terraform plan -destroy を実行すると何が起きる？", a:"B", hint:"-destroy オプションで削除対象を事前確認できる", choices:["A: リソースが削除される","B: 削除対象のリソースが確認できる（実際には削除しない）","C: stateが初期化される","D: バックエンドが切り替わる"] },
-
   // ===== 中級 穴埋め =====
   { level:"中級", type:"穴埋め", q:"terraform ___ で特定リソースのみをターゲットにしてapplyする", a:"-target", hint:"-target=aws_instance.example のように指定" },
   { level:"中級", type:"穴埋め", q:"terraform apply ___ で変数を上書きする", a:"-var", hint:"-var=\"key=value\" の形式" },
@@ -136,8 +137,8 @@ const RIDDLES: Riddle[] = [
   { level:"中級", type:"4択", q:"stateロックにDynamoDBを使うとき、テーブルのキー名は？", a:"C", hint:"Terraformが固定で使うキー名", choices:["A: StateID","B: TerraformLock","C: LockID","D: ResourceKey"] },
   { level:"中級", type:"4択", q:"別stateのoutput値を参照するために使うdata sourceは？", a:"A", hint:"data.terraform_remote_state.名前.outputs.キー の形式で使う", choices:["A: terraform_remote_state","B: remote_output","C: state_output","D: backend_data"] },
   // ===== 中級 2択 =====
-  { level:"中級", type:"2択", q:"複数のリソースをキーで管理したいとき適切なのはどちら？\nA: count\nB: for_each", a:"B", hint:"countはインデックスだがfor_eachはキーで管理できる", choices:["A","B"] },
-  { level:"中級", type:"2択", q:"create_before_destroyの主な目的はどちら？\nA: コストの削減\nB: ダウンタイムの防止", a:"B", hint:"新リソースを先に作ってから旧リソースを削除する", choices:["A","B"] },
+  { level:"中級", type:"2択", q:"複数のリソースをキーで管理したいとき適切なのはどちら？\nA: count\nB: for_each", a:"B", hint:"countはインデックスだがfor_eachはキーで管理できる", choices:["A: count","B: for_each"] },
+  { level:"中級", type:"2択", q:"create_before_destroyの主な目的はどちら？\nA: コストの削減\nB: ダウンタイムの防止", a:"B", hint:"新リソースを先に作ってから旧リソースを削除する", choices:["A: コストの削減","B: ダウンタイムの防止"] },
 ];
 
 const VARIANTS: Record<string, string[]> = {
@@ -216,6 +217,8 @@ export default function App() {
   const [total, setTotal] = useState<number>(0);
   const [input, setInput] = useState<string>("");
   const [result, setResult] = useState<"correct"|"wrong"|null>(null);
+  const [logs, setLogs] = useState<AnswerLog[]>([]);
+  const [reviewFilter, setReviewFilter] = useState<"all"|"wrong">("wrong");
   const timerRef = useRef<ReturnType<typeof setInterval>|null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -242,7 +245,7 @@ export default function App() {
     setDeck(shuffle(filtered));
     setPhase("running"); setTimeLeft(TOTAL_SEC);
     setIdx(0); setInput(""); setResult(null);
-    setCorrect(0); setTotal(0);
+    setCorrect(0); setTotal(0); setLogs([]);
     setTimeout(() => inputRef.current?.focus(), 100);
   };
 
@@ -253,11 +256,10 @@ export default function App() {
     setResult(ok ? "correct" : "wrong");
     setTotal(t => t + 1);
     if (ok) setCorrect(c => c + 1);
+    setLogs(l => [...l, { riddle: cur, userAnswer: ans, correct: ok }]);
   }, [cur]);
 
-  const submit = useCallback(() => {
-    submitAnswer(input);
-  }, [input, submitAnswer]);
+  const submit = useCallback(() => { submitAnswer(input); }, [input, submitAnswer]);
 
   const next = useCallback(() => {
     setIdx(i => i + 1); setInput(""); setResult(null);
@@ -277,20 +279,28 @@ export default function App() {
     return () => window.removeEventListener("keydown", onKey);
   }, [submit, next]);
 
-  const getAnswerLabel = (a: string) => {
+  const getAnswerLabel = (a: string, riddle?: Riddle) => {
     if (a === "〇") return "〇（正しい）";
     if (a === "✗") return "✗（誤り）";
+    if (riddle?.choices) {
+      const keys = ["A","B","C","D"];
+      const i = keys.indexOf(a.toUpperCase());
+      if (i >= 0 && riddle.choices[i]) {
+        return `${a}: ${riddle.choices[i].replace(/^[A-D]: /, "")}`;
+      }
+    }
     return a;
   };
 
   const getPlaceholder = () => {
-    if (cur.type === "まるばつ") return "〇 または ✗ を入力（o / x でも可）";
+    if (cur.type === "まるばつ") return "〇 または ✗（o / x でも可）";
     if (cur.type === "4択") return "A / B / C / D を入力";
     if (cur.type === "2択") return "A または B を入力";
     return "答えを入力…";
   };
 
   const scoreMsg = correct >= 15 ? "Terraform マスター🔥" : correct >= 8 ? "なかなかやりますね💪" : "もっと練習だ😊";
+  const displayLogs = reviewFilter === "wrong" ? logs.filter(l => !l.correct) : logs;
 
   return (
     <div style={{ minHeight:"100vh", background:"linear-gradient(160deg,#0F2027,#203A43,#2C5364)", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", fontFamily:"'Segoe UI',monospace", padding:"20px", boxSizing:"border-box" }}>
@@ -298,7 +308,7 @@ export default function App() {
         <div style={{ fontSize:34 }}>🏗️</div>
         <h1 style={{ fontSize:18, fontWeight:900, margin:"4px 0 2px", background:"linear-gradient(90deg,#4FACFE,#A18CD1,#43E97B,#FFB347)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>Terraform クイズ</h1>
         <p style={{ fontSize:11, color:"#6B8899", margin:0 }}>初級：まるばつ・4択　中級：全形式　3分タイマー制</p>
-        <p id="question-count" style={{ fontSize:10, color:"#4FACFE", margin:"2px 0 0" }}>全{RIDDLES.length}問（初級{RIDDLES.filter(r=>r.level==="初級").length}・中級{RIDDLES.filter(r=>r.level==="中級").length}）</p>
+        <p style={{ fontSize:10, color:"#4FACFE", margin:"2px 0 0" }}>全{RIDDLES.length}問（初級{RIDDLES.filter(r=>r.level==="初級").length}・中級{RIDDLES.filter(r=>r.level==="中級").length}）</p>
       </div>
 
       {phase !== "idle" && (
@@ -330,6 +340,7 @@ export default function App() {
         <div style={{ background:`linear-gradient(90deg,${c1},${c2})`, height:5 }}/>
         <div style={{ padding:"20px 22px 18px" }}>
 
+          {/* IDLE */}
           {phase === "idle" && (
             <div style={{ textAlign:"center", padding:"14px 0" }}>
               <div style={{ fontSize:46, marginBottom:8 }}>⏱️</div>
@@ -340,15 +351,14 @@ export default function App() {
                   <button key={lv} onClick={() => setFilterLevel(lv)} style={{ padding:"6px 18px", borderRadius:20, border:"none", fontWeight:700, fontSize:13, cursor:"pointer", background: filterLevel===lv ? (lv==="初級"?"#43E97B":lv==="中級"?"#FFB347":"#4FACFE") : "#1e3a4a", color: filterLevel===lv?"#fff":"#6B8899" }}>{lv}</button>
                 ))}
               </div>
-              <div style={{ display:"flex", flexWrap:"wrap", gap:5, justifyContent:"center", marginBottom:12 }}>
-              </div>
               <div style={{ background:"#0F1E2A", borderRadius:12, padding:"10px 14px", fontSize:11, color:"#6B8899", textAlign:"left", lineHeight:1.8 }}>
-                <div>🟢 <strong style={{ color:"#43E97B" }}>初級</strong>：まるばつ・4択のみ（入力不要）</div>
+                <div>🟢 <strong style={{ color:"#43E97B" }}>初級</strong>：まるばつ・4択のみ</div>
                 <div>🟡 <strong style={{ color:"#FFB347" }}>中級</strong>：穴埋め・構文・state・概念・まるばつ・2択・4択</div>
               </div>
             </div>
           )}
 
+          {/* RUNNING */}
           {phase === "running" && (
             <>
               <div style={{ marginBottom:10, display:"flex", gap:6, alignItems:"center" }}>
@@ -364,7 +374,7 @@ export default function App() {
                     const key = ["A","B","C","D"][i];
                     return (
                       <button key={key} onClick={() => submitAnswer(key)}
-                        style={{ padding:"10px 16px", borderRadius:12, border:`2px solid ${c1}44`, background:"#0F1E2A", color:"#E0EAF0", fontWeight:700, fontSize:13, cursor:"pointer", textAlign:"left", fontFamily:"'Segoe UI',sans-serif", transition:"background 0.15s" }}
+                        style={{ padding:"10px 16px", borderRadius:12, border:`2px solid ${c1}44`, background:"#0F1E2A", color:"#E0EAF0", fontWeight:700, fontSize:13, cursor:"pointer", textAlign:"left", fontFamily:"'Segoe UI',sans-serif" }}
                         onMouseEnter={e => (e.currentTarget.style.background="#1a3a4a")}
                         onMouseLeave={e => (e.currentTarget.style.background="#0F1E2A")}>
                         <span style={{ color:c1, fontFamily:"monospace", marginRight:8 }}>{key}.</span>{choice.replace(/^[A-D]: /,"")}
@@ -378,7 +388,7 @@ export default function App() {
                 <div style={{ display:"flex", gap:10, justifyContent:"center" }}>
                   {["〇","✗"].map(ch => (
                     <button key={ch} onClick={() => submitAnswer(ch)}
-                      style={{ flex:1, padding:"14px", borderRadius:12, border:`2px solid ${ch==="〇"?"#43E97B44":"#FF6B9D44"}`, background:"#0F1E2A", color: ch==="〇"?"#43E97B":"#FF6B9D", fontWeight:900, fontSize:26, cursor:"pointer", transition:"background 0.15s" }}
+                      style={{ flex:1, padding:"14px", borderRadius:12, border:`2px solid ${ch==="〇"?"#43E97B44":"#FF6B9D44"}`, background:"#0F1E2A", color: ch==="〇"?"#43E97B":"#FF6B9D", fontWeight:900, fontSize:26, cursor:"pointer" }}
                       onMouseEnter={e => (e.currentTarget.style.background="#1a3a4a")}
                       onMouseLeave={e => (e.currentTarget.style.background="#0F1E2A")}>
                       {ch}
@@ -399,35 +409,79 @@ export default function App() {
               {result === "correct" && (
                 <div style={{ background:"#0A2A1A", borderRadius:14, padding:"12px 16px", border:"2px solid #43E97B" }}>
                   <div style={{ fontSize:18, fontWeight:900, color:"#43E97B" }}>⭕ 正解！</div>
-                  <div style={{ fontSize:13, color:"#A0BFC0", marginTop:4 }}>答え：<strong style={{ color:"#fff", fontFamily:"monospace" }}>{getAnswerLabel(cur.a)}</strong></div>
+                  <div style={{ fontSize:13, color:"#A0BFC0", marginTop:4 }}>答え：<strong style={{ color:"#fff", fontFamily:"monospace" }}>{getAnswerLabel(cur.a, cur)}</strong></div>
                   {cur.hint && <div style={{ fontSize:12, color:"#6B8899", marginTop:6 }}>💡 {cur.hint}</div>}
                 </div>
               )}
               {result === "wrong" && (
                 <div style={{ background:"#2A0A1A", borderRadius:14, padding:"12px 16px", border:"2px solid #FF6B9D" }}>
                   <div style={{ fontSize:18, fontWeight:900, color:"#FF6B9D" }}>❌ 不正解…</div>
-                  <div style={{ fontSize:13, color:"#A0BFC0", marginTop:4 }}>あなたの答え：<strong style={{ color:"#FF6B9D", fontFamily:"monospace" }}>{input}</strong></div>
-                  <div style={{ fontSize:13, color:"#A0BFC0", marginTop:2 }}>正解は：<strong style={{ color:"#FFB347", fontFamily:"monospace" }}>{getAnswerLabel(cur.a)}</strong></div>
+                  <div style={{ fontSize:13, color:"#A0BFC0", marginTop:4 }}>あなたの答え：<strong style={{ color:"#FF6B9D", fontFamily:"monospace" }}>{getAnswerLabel(input, cur)}</strong></div>
+                  <div style={{ fontSize:13, color:"#A0BFC0", marginTop:2 }}>正解は：<strong style={{ color:"#FFB347", fontFamily:"monospace" }}>{getAnswerLabel(cur.a, cur)}</strong></div>
                   {cur.hint && <div style={{ fontSize:12, color:"#6B8899", marginTop:6 }}>💡 {cur.hint}</div>}
                 </div>
               )}
             </>
           )}
 
+          {/* FINISHED */}
           {phase === "finished" && (
-            <div style={{ textAlign:"center", padding:"14px 0" }}>
-              <div style={{ fontSize:48 }}>🎉</div>
-              <p style={{ fontSize:15, fontWeight:900, color:"#4FACFE", margin:"6px 0 10px" }}>タイムアップ！</p>
-              <div style={{ background:"linear-gradient(135deg,#0F2A1A,#1A2A0F)", borderRadius:16, padding:"14px", marginBottom:10, border:"1px solid #2a4a3a" }}>
-                <div style={{ display:"flex", justifyContent:"space-around" }}>
-                  <div><div style={{ fontSize:11, color:"#6B8899" }}>正解</div><div style={{ fontSize:38, fontWeight:900, color:"#43E97B" }}>{correct}</div></div>
-                  <div style={{ fontSize:28, color:"#2a4a5a", alignSelf:"center" }}>/</div>
-                  <div><div style={{ fontSize:11, color:"#6B8899" }}>挑戦</div><div style={{ fontSize:38, fontWeight:900, color:"#E0EAF0" }}>{total}</div></div>
-                  <div style={{ fontSize:28, color:"#2a4a5a", alignSelf:"center" }}>=</div>
-                  <div><div style={{ fontSize:11, color:"#6B8899" }}>正答率</div><div style={{ fontSize:38, fontWeight:900, color:"#4FACFE" }}>{total>0?Math.round(correct/total*100):0}<span style={{ fontSize:14 }}>%</span></div></div>
+            <div style={{ padding:"14px 0" }}>
+              <div style={{ textAlign:"center", marginBottom:16 }}>
+                <div style={{ fontSize:48 }}>🎉</div>
+                <p style={{ fontSize:15, fontWeight:900, color:"#4FACFE", margin:"6px 0 10px" }}>タイムアップ！</p>
+                <div style={{ background:"linear-gradient(135deg,#0F2A1A,#1A2A0F)", borderRadius:16, padding:"14px", marginBottom:8, border:"1px solid #2a4a3a" }}>
+                  <div style={{ display:"flex", justifyContent:"space-around" }}>
+                    <div><div style={{ fontSize:11, color:"#6B8899" }}>正解</div><div style={{ fontSize:34, fontWeight:900, color:"#43E97B" }}>{correct}</div></div>
+                    <div style={{ fontSize:24, color:"#2a4a5a", alignSelf:"center" }}>/</div>
+                    <div><div style={{ fontSize:11, color:"#6B8899" }}>挑戦</div><div style={{ fontSize:34, fontWeight:900, color:"#E0EAF0" }}>{total}</div></div>
+                    <div style={{ fontSize:24, color:"#2a4a5a", alignSelf:"center" }}>=</div>
+                    <div><div style={{ fontSize:11, color:"#6B8899" }}>正答率</div><div style={{ fontSize:34, fontWeight:900, color:"#4FACFE" }}>{total>0?Math.round(correct/total*100):0}<span style={{ fontSize:13 }}>%</span></div></div>
+                  </div>
                 </div>
+                <p style={{ color:"#6B8899", fontSize:12, marginBottom:0 }}>{scoreMsg}</p>
               </div>
-              <p style={{ color:"#6B8899", fontSize:12 }}>{scoreMsg}</p>
+
+              {/* 復習フィルター */}
+              <div style={{ display:"flex", gap:8, marginBottom:10 }}>
+                {(["wrong","all"] as const).map(f => (
+                  <button key={f} onClick={() => setReviewFilter(f)}
+                    style={{ flex:1, padding:"6px", borderRadius:12, border:"none", fontWeight:700, fontSize:12, cursor:"pointer",
+                      background: reviewFilter===f ? (f==="wrong"?"#FF6B9D":"#4FACFE") : "#1e3a4a",
+                      color: reviewFilter===f ? "#fff" : "#6B8899" }}>
+                    {f==="wrong" ? `❌ 間違い（${logs.filter(l=>!l.correct).length}問）` : `📋 全問（${logs.length}問）`}
+                  </button>
+                ))}
+              </div>
+
+              {/* 問題一覧 */}
+              <div style={{ display:"flex", flexDirection:"column", gap:8, maxHeight:340, overflowY:"auto" }}>
+                {displayLogs.length === 0 && (
+                  <div style={{ textAlign:"center", color:"#43E97B", fontSize:13, padding:"20px 0" }}>
+                    {reviewFilter==="wrong" ? "✨ 全問正解！間違いなし" : "まだ挑戦した問題がありません"}
+                  </div>
+                )}
+                {displayLogs.map((log, i) => {
+                  const lcfg = TYPE_CONFIG[log.riddle.type];
+                  return (
+                    <div key={i} style={{ background: log.correct ? "#0A2A1A" : "#2A0A1A", borderRadius:12, padding:"10px 12px", border:`1px solid ${log.correct?"#43E97B44":"#FF6B9D44"}` }}>
+                      <div style={{ display:"flex", gap:6, alignItems:"center", marginBottom:4 }}>
+                        <span style={{ fontSize:9, padding:"1px 7px", borderRadius:20, color:"#fff", background:`linear-gradient(90deg,${lcfg.color[0]},${lcfg.color[1]})` }}>{lcfg.emoji} {log.riddle.type}</span>
+                        <span style={{ fontSize:9, color:LEVEL_COLOR[log.riddle.level] }}>{log.riddle.level}</span>
+                        <span style={{ marginLeft:"auto", fontSize:14 }}>{log.correct?"⭕":"❌"}</span>
+                      </div>
+                      <div style={{ fontSize:12, color:"#E0EAF0", fontWeight:700, whiteSpace:"pre-wrap", marginBottom:4 }}>{log.riddle.q}</div>
+                      {!log.correct && (
+                        <div style={{ fontSize:11, color:"#aaa" }}>
+                          あなた：<span style={{ color:"#FF6B9D", fontFamily:"monospace" }}>{getAnswerLabel(log.userAnswer, log.riddle)}</span>　
+                          正解：<span style={{ color:"#FFB347", fontFamily:"monospace" }}>{getAnswerLabel(log.riddle.a, log.riddle)}</span>
+                        </div>
+                      )}
+                      {log.riddle.hint && <div style={{ fontSize:11, color:"#6B8899", marginTop:3 }}>💡 {log.riddle.hint}</div>}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>
