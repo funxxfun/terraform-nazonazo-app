@@ -12,6 +12,25 @@ interface Riddle {
 }
 
 const RIDDLES: Riddle[] = [
+  // ===== 初級 概念理解 まるばつ =====
+  { level:"初級", type:"まるばつ", q:"TerraformはHashiCorpが開発したIaCツールである", a:"〇", hint:"2014年にHashiCorpがリリースしたオープンソースツール" },
+  { level:"初級", type:"まるばつ", q:"TerraformはAWSにしか対応していない", a:"✗", hint:"AWS・GCP・Azure・Kubernetes など多数のプロバイダーに対応" },
+  { level:"初級", type:"まるばつ", q:"Terraformは「あるべき状態」を宣言するツールである", a:"〇", hint:"手順を書くのではなく最終状態を定義する宣言的アプローチ" },
+  { level:"初級", type:"まるばつ", q:"IaCとはインフラをコードで管理する考え方である", a:"〇", hint:"Infrastructure as Codeの略。再現性・自動化が利点" },
+  { level:"初級", type:"まるばつ", q:"Terraformはインフラの変更手順を命令的に記述するツールである", a:"✗", hint:"Terraformは宣言的。手順ではなく最終状態を記述する" },
+  { level:"初級", type:"まるばつ", q:"TerraformはGUIで操作するツールである", a:"✗", hint:"CLIツール。コマンドラインで操作する" },
+  { level:"初級", type:"まるばつ", q:"Terraformを使うと同じ構成のインフラを何度でも再現できる", a:"〇", hint:"冪等性がIaCの大きなメリット" },
+  // ===== 初級 概念理解 4択 =====
+  { level:"初級", type:"4択", q:"Terraformとは何か？", a:"B", hint:"HashiCorpが開発したオープンソースのIaCツール", choices:["A: AWSが提供するデプロイツール","B: インフラをコードで管理するIaCツール","C: コンテナを管理するオーケストレーションツール","D: CI/CDパイプラインツール"] },
+  { level:"初級", type:"4択", q:"IaC（Infrastructure as Code）の主なメリットはどれ？", a:"C", hint:"コードとして管理することで再現性・自動化・バージョン管理が可能になる", choices:["A: 手動作業が増える","B: クラウドコストが下がる","C: インフラの再現性・自動化が向上する","D: セキュリティが自動で強化される"] },
+  { level:"初級", type:"4択", q:"Terraformが「宣言的」と言われる理由は？", a:"A", hint:"「どうやって作るか」ではなく「何を作るか」を記述する", choices:["A: 最終状態を定義するだけでよいから","B: コマンドを順番に実行するから","C: GUIで操作できるから","D: スクリプトを自動生成するから"] },
+  { level:"初級", type:"4択", q:"Terraformが対応しているクラウドはどれ？", a:"D", hint:"プロバイダーを通じて多数のクラウドに対応している", choices:["A: AWSのみ","B: AWSとGCPのみ","C: AWSとAzureのみ","D: AWS・GCP・Azureなど多数"] },
+  { level:"初級", type:"4択", q:"Terraformでインフラを管理するメリットとして最も適切なのは？", a:"B", hint:"コードなのでGitで差分・履歴が管理できる", choices:["A: インフラが自動的にスケールする","B: インフラの変更履歴をGitで管理できる","C: クラウドの料金が自動で最適化される","D: セキュリティ脆弱性を自動修正できる"] },
+  { level:"初級", type:"4択", q:"Terraformのプロバイダーとは何か？", a:"C", hint:"AWSやGCPなど各クラウドのAPIと通信するプラグイン", choices:["A: インフラのコスト計算ツール","B: stateを保存するサービス","C: クラウドのAPIと通信するプラグイン","D: モジュールを配布するサービス"] },
+  { level:"初級", type:"4択", q:"Terraformのモジュールとは何か？", a:"A", hint:"DRYを実現するための再利用可能なコードのまとまり", choices:["A: 再利用可能なTerraformコードのまとまり","B: stateファイルの別名","C: プロバイダーの設定ファイル","D: クラウドのリソースグループ"] },
+  { level:"初級", type:"4択", q:"Terraformのstateファイルの主な役割は？", a:"B", hint:"このファイルとコードの差分からplanが計算される", choices:["A: プロバイダーのバージョンを固定する","B: 現在のインフラ状態を記録してコードとの差分計算に使う","C: 変数の値を保存する","D: モジュールの依存関係を管理する"] },
+  { level:"初級", type:"4択", q:"冪等性（べき等性）とは何か？", a:"C", hint:"Terraformが目指す性質で、何度applyしても同じ状態になる", choices:["A: 実行速度が一定であること","B: コストが変わらないこと","C: 何度実行しても同じ結果になること","D: エラーが発生しないこと"] },
+
   // ===== 初級 まるばつ (25問) =====
   { level:"初級", type:"まるばつ", q:"terraform plan を実行するとインフラが変更される", a:"✗", hint:"planは差分確認のみ。実際の変更はapplyで行う" },
   { level:"初級", type:"まるばつ", q:"terraform destroy を実行すると .tf ファイルも削除される", a:"✗", hint:"destroyはインフラリソースを削除するだけ。ファイルは消えない" },
@@ -65,6 +84,19 @@ const RIDDLES: Riddle[] = [
   { level:"初級", type:"4択", q:"moduleブロックで必ず指定しなければならないキーはどれ？", a:"C", hint:"モジュールの場所を指定する", choices:["A: name","B: version","C: source","D: provider"] },
   { level:"初級", type:"4択", q:"terraform init -upgrade が行うことはどれ？", a:"B", hint:"ロックファイルも更新される", choices:["A: stateをリセットする","B: プロバイダーを最新版にアップグレードする","C: ワークスペースを切り替える","D: バックエンドを初期化する"] },
   { level:"初級", type:"4択", q:"terraform state mv の用途はどれ？", a:"D", hint:"リソースのリネームや別stateへの移動に使う", choices:["A: リソースを削除する","B: stateファイルを移動する","C: バックエンドを変更する","D: stateのリソース名を変更する"] },
+
+  // ===== 中級 概念理解 まるばつ =====
+  { level:"中級", type:"まるばつ", q:"TerraformはAnsibleと同じくサーバー内部の設定管理が得意なツールである", a:"✗", hint:"Terraformはインフラのプロビジョニングが得意。設定管理はAnsibleなどが担う" },
+  { level:"中級", type:"まるばつ", q:"Terraformの冪等性とは、同じコードを何度applyしても同じ状態になることを指す", a:"〇", hint:"差分がなければapplyしても何も変わらない" },
+  { level:"中級", type:"まるばつ", q:"Terraform CloudはHashiCorpが提供するTerraform専用のSaaSプラットフォームである", a:"〇", hint:"stateの管理・ロック・CI/CDなどが統合されている" },
+  { level:"中級", type:"まるばつ", q:"Terraformのworkspaceを使えば完全に独立した本番環境と開発環境を安全に分離できる", a:"✗", hint:"workspaceはstateを分けるだけ。環境分離にはディレクトリ分割なども検討が必要" },
+  { level:"中級", type:"まるばつ", q:"terraform destroyの前にterraform planで削除対象を確認することができる", a:"〇", hint:"terraform plan -destroy で削除対象のリソースを事前確認できる" },
+  // ===== 中級 概念理解 4択 =====
+  { level:"中級", type:"4択", q:"TerraformとAnsibleの主な違いとして最も適切なのは？", a:"B", hint:"Terraformはインフラ構築、Ansibleはサーバー設定管理が得意", choices:["A: TerraformはAWS専用でAnsibleはGCP専用","B: Terraformはインフラ構築、Ansibleは設定管理が得意","C: TerraformはGUIツールでAnsibleはCLIツール","D: TerraformはDockerのみ対応"] },
+  { level:"中級", type:"4択", q:"Terraform Cloudの主なメリットはどれ？", a:"C", hint:"stateの管理・ロック・リモート実行が統合されたSaaS", choices:["A: プロバイダーを無料で使える","B: クラウド費用が削減される","C: stateの管理・ロック・リモート実行が統合されている","D: Terraformのコードを自動生成してくれる"] },
+  { level:"中級", type:"4択", q:"「インフラのドリフト」とはどういう状態か？", a:"A", hint:"terraform refreshやplanで検出できる", choices:["A: stateとクラウドの実際のリソース状態がズレている状態","B: コードにバグがある状態","C: stateファイルが破損した状態","D: プロバイダーのバージョンが古い状態"] },
+  { level:"中級", type:"4択", q:"Terraformでenv（環境）を分ける方法として最も安全なのはどれ？", a:"D", hint:"workspaceはstateを分けるだけで設定を分けにくい", choices:["A: 同一ディレクトリで変数を変える","B: workspace だけで分ける","C: .tfvars のみで管理する","D: 環境ごとにディレクトリを分けてstateも分ける"] },
+  { level:"中級", type:"4択", q:"terraform plan -destroy を実行すると何が起きる？", a:"B", hint:"-destroy オプションで削除対象を事前確認できる", choices:["A: リソースが削除される","B: 削除対象のリソースが確認できる（実際には削除しない）","C: stateが初期化される","D: バックエンドが切り替わる"] },
 
   // ===== 中級 穴埋め =====
   { level:"中級", type:"穴埋め", q:"terraform ___ で特定リソースのみをターゲットにしてapplyする", a:"-target", hint:"-target=aws_instance.example のように指定" },
@@ -214,13 +246,18 @@ export default function App() {
     setTimeout(() => inputRef.current?.focus(), 100);
   };
 
-  const submit = useCallback(() => {
-    if (!input.trim()) return;
-    const ok = judge(input, cur.a);
+  const submitAnswer = useCallback((ans: string) => {
+    if (!ans.trim()) return;
+    const ok = judge(ans, cur.a);
+    setInput(ans);
     setResult(ok ? "correct" : "wrong");
     setTotal(t => t + 1);
     if (ok) setCorrect(c => c + 1);
-  }, [input, cur]);
+  }, [cur]);
+
+  const submit = useCallback(() => {
+    submitAnswer(input);
+  }, [input, submitAnswer]);
 
   const next = useCallback(() => {
     setIdx(i => i + 1); setInput(""); setResult(null);
@@ -261,6 +298,7 @@ export default function App() {
         <div style={{ fontSize:34 }}>🏗️</div>
         <h1 style={{ fontSize:18, fontWeight:900, margin:"4px 0 2px", background:"linear-gradient(90deg,#4FACFE,#A18CD1,#43E97B,#FFB347)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>Terraform クイズ</h1>
         <p style={{ fontSize:11, color:"#6B8899", margin:0 }}>初級：まるばつ・4択　中級：全形式　3分タイマー制</p>
+        <p id="question-count" style={{ fontSize:10, color:"#4FACFE", margin:"2px 0 0" }}>全{RIDDLES.length}問（初級{RIDDLES.filter(r=>r.level==="初級").length}・中級{RIDDLES.filter(r=>r.level==="中級").length}）</p>
       </div>
 
       {phase !== "idle" && (
@@ -325,7 +363,7 @@ export default function App() {
                   {cur.choices.map((choice, i) => {
                     const key = ["A","B","C","D"][i];
                     return (
-                      <button key={key} onClick={() => { setInput(key); setTimeout(submit, 0); }}
+                      <button key={key} onClick={() => submitAnswer(key)}
                         style={{ padding:"10px 16px", borderRadius:12, border:`2px solid ${c1}44`, background:"#0F1E2A", color:"#E0EAF0", fontWeight:700, fontSize:13, cursor:"pointer", textAlign:"left", fontFamily:"'Segoe UI',sans-serif", transition:"background 0.15s" }}
                         onMouseEnter={e => (e.currentTarget.style.background="#1a3a4a")}
                         onMouseLeave={e => (e.currentTarget.style.background="#0F1E2A")}>
@@ -339,7 +377,7 @@ export default function App() {
               {result === null && cur.type === "まるばつ" && (
                 <div style={{ display:"flex", gap:10, justifyContent:"center" }}>
                   {["〇","✗"].map(ch => (
-                    <button key={ch} onClick={() => { setInput(ch); setTimeout(submit, 0); }}
+                    <button key={ch} onClick={() => submitAnswer(ch)}
                       style={{ flex:1, padding:"14px", borderRadius:12, border:`2px solid ${ch==="〇"?"#43E97B44":"#FF6B9D44"}`, background:"#0F1E2A", color: ch==="〇"?"#43E97B":"#FF6B9D", fontWeight:900, fontSize:26, cursor:"pointer", transition:"background 0.15s" }}
                       onMouseEnter={e => (e.currentTarget.style.background="#1a3a4a")}
                       onMouseLeave={e => (e.currentTarget.style.background="#0F1E2A")}>
